@@ -66,8 +66,7 @@ VALUES
 
 -- SQL-запросы по заданиям лабораторной работы
 
--- 1. Номера складов, которые не получали товар в сентябре.
--- Год не ограничен, поскольку он не указан в условии.
+-- 1. Выбрать номера складов, которые не получали товар в сентябре.
 SELECT w.warehouse_id
 FROM lab2_demo.warehouses AS w
 WHERE NOT EXISTS (
@@ -80,7 +79,8 @@ WHERE NOT EXISTS (
 ORDER BY w.warehouse_id;
 
 
--- 2. Все склады Москвы с вакантной должностью заведующего.
+-- 2. Выбрать все склады, находящиеся в Москве, с вакантной должностью заведующего
+--    складом.
 SELECT w.*
 FROM lab2_demo.warehouses AS w
 WHERE w.address ILIKE 'Москва,%'
@@ -88,8 +88,8 @@ WHERE w.address ILIKE 'Москва,%'
 ORDER BY w.warehouse_id;
 
 
--- 3. Создать таблицу из результата запроса 1,
--- добавив адрес, вместимость и заведующего (он нужен в пункте 6).
+-- 3. Создать таблицу, содержащую данные 1 запроса с указанием адресов складов и их
+--    вместимости.
 DROP TABLE IF EXISTS lab2_demo.lab2_warehouses;
 
 CREATE TABLE lab2_demo.lab2_warehouses AS
@@ -108,8 +108,7 @@ WHERE NOT EXISTS (
 );
 
 
--- 4. Добавить в созданную таблицу склады, расположенные не в Москве.
--- NOT EXISTS защищает от дублирования складов из пункта 3.
+-- 4. В созданную таблицу добавить склады, находящиеся не в Москве.
 INSERT INTO lab2_demo.lab2_warehouses (warehouse_id, address, capacity, manager_name)
 SELECT
     w.warehouse_id,
@@ -125,13 +124,13 @@ WHERE w.address NOT ILIKE 'Москва,%'
   );
 
 
--- 5. Увеличить вместимость в 3 раза у складов с чётными номерами.
+-- 5. Для всех складов с четными номерами, увеличить вместимость в три раза.
 UPDATE lab2_demo.lab2_warehouses
 SET capacity = capacity * 3
 WHERE MOD(warehouse_id, 2) = 0;
 
 
--- 6. Удалить из созданной таблицы склады без заведующего.
+-- 6. Удалить из созданной таблицы все записи для складов без заведующего.
 DELETE FROM lab2_demo.lab2_warehouses
 WHERE manager_name IS NULL OR BTRIM(manager_name) = '';
 
@@ -142,8 +141,7 @@ FROM lab2_demo.lab2_warehouses
 ORDER BY warehouse_id;
 
 
--- 7. Суммарный вес товара, отгруженного на каждый склад за 2008 год.
--- LEFT JOIN включает и склады без отгрузок; для них вес равен 0.
+-- 7. Посчитать суммарный вес товара, отгруженный на каждый из складов за 2008 год.
 SELECT
     w.warehouse_id,
     w.address,
